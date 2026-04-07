@@ -10,8 +10,8 @@ const STORAGE_KEYS = {
 
 async function loadStorage(key, fallback) {
   try {
-    const val = localStorage.getItem(key);
-    return val ? JSON.parse(val) : fallback;
+    const v = localStorage.getItem(key);
+    return v ? JSON.parse(v) : fallback;
   } catch { return fallback; }
 }
 async function saveStorage(key, value) {
@@ -478,6 +478,8 @@ export default function ProteinTracker(){
   const[loaded,setLoaded]=useState(false);
   const[profileName,setProfileName]=useState("");
   const[toast,setToast]=useState("");
+  const[communityEmail,setCommunityEmail]=useState("");
+  const[emailSubmitted,setEmailSubmitted]=useState(false);
   const saveTimer=useRef(null);
 
   const allFoods=[...FOOD_DATA,...customFoods];
@@ -493,6 +495,8 @@ export default function ProteinTracker(){
       if(h)setHistory(h);
       if(cf)setCustomFoods(cf);
       if(today&&today.date===getTodayKey()){setMealData(today.meals);}
+      const es=await loadStorage("pkh-email-submitted",false);
+      if(es)setEmailSubmitted(true);
       setLoaded(true);
     })();
   },[]);
@@ -676,7 +680,7 @@ export default function ProteinTracker(){
 
       {/* Tabs */}
       <div style={{display:"flex",padding:"0 20px 10px"}}>
-        {[{id:"track",l:"🍽️ Track"},{id:"tips",l:"💡 Tips"}].map(t=>(
+        {[{id:"track",l:"🍽️ Track"},{id:"tips",l:"💡 Tips"},{id:"community",l:"👥 Community"}].map(t=>(
           <button key={t.id} onClick={()=>setActiveTab(t.id)} style={{
             flex:1,background:activeTab===t.id?"rgba(234,179,8,.1)":"transparent",
             border:"none",borderBottom:activeTab===t.id?"2px solid #eab308":"2px solid rgba(255,255,255,.05)",
@@ -731,8 +735,95 @@ export default function ProteinTracker(){
             <p style={{textAlign:"center",fontSize:".62rem",color:"rgba(255,255,255,.18)",marginTop:5}}>Help build India's protein database</p>
           </div>
         </>
-      ):(
+      ):activeTab==="tips"?(
         <TipsSection/>
+      ):(
+        /* ===== COMMUNITY TAB ===== */
+        <div style={{padding:"4px 20px 0"}}>
+          {/* Hero */}
+          <div style={{textAlign:"center",padding:"16px 0 20px"}}>
+            <div style={{fontSize:"2.5rem",marginBottom:8}}>🇮🇳</div>
+            <h3 style={{fontSize:"1.4rem",fontWeight:800,color:"#eab308",fontFamily:"'Teko',sans-serif",lineHeight:1.1}}>Join India's Protein Movement</h3>
+            <p style={{fontSize:".82rem",color:"rgba(255,255,255,.45)",marginTop:8,lineHeight:1.5}}>
+              A community of people helping their families eat more protein. Share tips, recipes, wins — and help us build a better tracker.
+            </p>
+          </div>
+
+          {/* Telegram — Main CTA */}
+          <a href="https://t.me/protein_ka_chakkar" target="_blank" rel="noopener noreferrer" style={{
+            display:"flex",alignItems:"center",gap:14,
+            background:"rgba(0,136,204,.1)",border:"2px solid rgba(0,136,204,.35)",
+            borderRadius:18,padding:"20px 18px",textDecoration:"none",marginBottom:20,
+          }}>
+            <div style={{fontSize:"2.4rem",flexShrink:0}}>✈️</div>
+            <div style={{flex:1}}>
+              <div style={{fontSize:"1rem",fontWeight:800,color:"#0088cc"}}>Join us on Telegram</div>
+              <div style={{fontSize:".75rem",color:"rgba(255,255,255,.4)",marginTop:4,lineHeight:1.4}}>Weekly meal plans, protein hacks, brand reviews, community challenges. Free forever.</div>
+            </div>
+            <div style={{fontSize:"1.3rem",color:"rgba(0,136,204,.5)"}}>→</div>
+          </a>
+
+          {/* Email capture */}
+          <div style={{background:"rgba(234,179,8,.06)",border:"1px solid rgba(234,179,8,.15)",borderRadius:16,padding:"18px",marginBottom:16}}>
+            <h4 style={{fontSize:".95rem",fontWeight:700,color:"#eab308",marginBottom:4}}>🔔 Get Weekly Protein Plans</h4>
+            <p style={{fontSize:".72rem",color:"rgba(255,255,255,.35)",marginBottom:14,lineHeight:1.5}}>
+              Free 7-day high-protein Indian meal plan delivered to your inbox every Monday. No spam, unsubscribe anytime.
+            </p>
+            {emailSubmitted?(
+              <div style={{background:"rgba(34,197,94,.1)",border:"1px solid rgba(34,197,94,.2)",borderRadius:12,padding:"12px",textAlign:"center"}}>
+                <span style={{fontSize:".88rem",color:"#22c55e",fontWeight:700}}>✅ You're in! Check your inbox Monday.</span>
+              </div>
+            ):(
+              <div style={{display:"flex",gap:8}}>
+                <input
+                  type="email" placeholder="your@email.com" value={communityEmail}
+                  onChange={e=>setCommunityEmail(e.target.value)}
+                  style={{flex:1,background:"rgba(255,255,255,.06)",border:"1px solid rgba(255,255,255,.1)",borderRadius:12,padding:"11px 14px",color:"#fff",fontSize:".88rem",outline:"none"}}
+                />
+                <button onClick={()=>{
+                  if(!communityEmail||!communityEmail.includes("@"))return;
+                  // Store email in persistent storage for collection
+                  saveStorage("pkh-emails",JSON.stringify({email:communityEmail,name:profileName,date:new Date().toISOString()}));
+                  saveStorage("pkh-email-submitted",true);
+                  setEmailSubmitted(true);
+                  setToast("Welcome aboard! 🎉");
+                  setTimeout(()=>setToast(""),3000);
+                }} style={{
+                  background:"#eab308",border:"none",borderRadius:12,padding:"0 20px",
+                  color:"#000",fontSize:".88rem",fontWeight:800,cursor:"pointer",
+                  opacity:(!communityEmail||!communityEmail.includes("@"))?.4:1,
+                  flexShrink:0,
+                }}>Join</button>
+              </div>
+            )}
+          </div>
+
+          {/* Social proof / stats */}
+          <div style={{display:"flex",gap:8,marginBottom:16}}>
+            <div style={{flex:1,background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.06)",borderRadius:14,padding:"14px",textAlign:"center"}}>
+              <div style={{fontSize:"1.5rem",fontWeight:800,color:"#eab308",fontFamily:"'Teko',sans-serif"}}>80+</div>
+              <div style={{fontSize:".62rem",color:"rgba(255,255,255,.3)"}}>Desi Foods</div>
+            </div>
+            <div style={{flex:1,background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.06)",borderRadius:14,padding:"14px",textAlign:"center"}}>
+              <div style={{fontSize:"1.5rem",fontWeight:800,color:"#eab308",fontFamily:"'Teko',sans-serif"}}>12+</div>
+              <div style={{fontSize:".62rem",color:"rgba(255,255,255,.3)"}}>Indian Brands</div>
+            </div>
+            <div style={{flex:1,background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.06)",borderRadius:14,padding:"14px",textAlign:"center"}}>
+              <div style={{fontSize:"1.5rem",fontWeight:800,color:"#eab308",fontFamily:"'Teko',sans-serif"}}>100%</div>
+              <div style={{fontSize:".62rem",color:"rgba(255,255,255,.3)"}}>Free</div>
+            </div>
+          </div>
+
+          {/* Feedback */}
+          <div style={{background:"rgba(255,255,255,.02)",border:"1px solid rgba(255,255,255,.06)",borderRadius:14,padding:"16px",textAlign:"center"}}>
+            <p style={{fontSize:".78rem",color:"rgba(255,255,255,.35)",lineHeight:1.5}}>
+              Got feedback? Want a feature? Found a bug?
+            </p>
+            <a href="mailto:YOUR_EMAIL@gmail.com?subject=Protein%20Tracker%20Feedback" style={{fontSize:".82rem",color:"#eab308",fontWeight:700,textDecoration:"none",display:"inline-block",marginTop:8}}>
+              📧 Send us feedback
+            </a>
+          </div>
+        </div>
       )}
 
       {/* Share FAB */}
