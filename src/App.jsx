@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Analytics } from '@vercel/analytics/react';
 
 // ============ STORAGE HELPERS ============
 const STORAGE_KEYS = {
@@ -154,7 +155,7 @@ const CATEGORIES = [
 ];
 
 const MEALS = [
-  { id:"breakfast", label:"Breakfast", shortLabel:"Bfast", emoji:"🌅" },
+  { id:"breakfast", label:"Breakfast", shortLabel:"Bfast", emoji:"���" },
   { id:"lunch", label:"Lunch", shortLabel:"Lunch", emoji:"☀️" },
   { id:"dinner", label:"Dinner", shortLabel:"Dinner", emoji:"🌙" },
   { id:"snacks", label:"Snacks", shortLabel:"Snacks", emoji:"🍿", anytime:true },
@@ -850,6 +851,7 @@ export default function ProteinTracker(){
       {showAddCustom&&<AddCustomModal onAdd={addCustomFood} onClose={()=>setShowAddCustom(false)}/>}
       {showCalc&&<ProteinCalcModal onClose={()=>setShowCalc(false)} onSetTarget={t=>{setTargetProtein(t);saveProfile(profileName,t);setToast("Target set to "+t+"g/day ✅");setTimeout(()=>setToast(""),3000);}}/>}
       {showHistory&&<HistoryView history={history} target={targetProtein} allFoods={allFoods} onClose={()=>setShowHistory(false)}/>}
+      <Analytics />
     </div>
   );
 }
