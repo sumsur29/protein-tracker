@@ -767,11 +767,11 @@ export default function ProteinTracker(){
           <div style={{background:"rgba(234,179,8,.06)",border:"1px solid rgba(234,179,8,.15)",borderRadius:16,padding:"18px",marginBottom:16}}>
             <h4 style={{fontSize:".95rem",fontWeight:700,color:"#eab308",marginBottom:4}}>🔔 Get Weekly Protein Plans</h4>
             <p style={{fontSize:".72rem",color:"rgba(255,255,255,.35)",marginBottom:14,lineHeight:1.5}}>
-              Free 7-day high-protein Indian meal plan delivered to your inbox every Monday. No spam, unsubscribe anytime.
+              Coming Soon. Free 7-day high-protein Indian meal plan delivered to your inbox every Monday. No spam, unsubscribe anytime.
             </p>
             {emailSubmitted?(
               <div style={{background:"rgba(34,197,94,.1)",border:"1px solid rgba(34,197,94,.2)",borderRadius:12,padding:"12px",textAlign:"center"}}>
-                <span style={{fontSize:".88rem",color:"#22c55e",fontWeight:700}}>✅ You're in! Check your inbox Monday.</span>
+                <span style={{fontSize:".88rem",color:"#22c55e",fontWeight:700}}>✅ You're in! Check your inbox Monday. Coming Soon.</span>
               </div>
             ):(
               <div style={{display:"flex",gap:8}}>
