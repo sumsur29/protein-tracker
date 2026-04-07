@@ -750,7 +750,7 @@ export default function ProteinTracker(){
           </div>
 
           {/* Telegram — Main CTA */}
-          <a href="https://t.me/protein_ka_chakkar" target="_blank" rel="noopener noreferrer" style={{
+          <a href="https://t.me/protein_hi_protein" target="_blank" rel="noopener noreferrer" style={{
             display:"flex",alignItems:"center",gap:14,
             background:"rgba(0,136,204,.1)",border:"2px solid rgba(0,136,204,.35)",
             borderRadius:18,padding:"20px 18px",textDecoration:"none",marginBottom:20,
@@ -819,8 +819,8 @@ export default function ProteinTracker(){
             <p style={{fontSize:".78rem",color:"rgba(255,255,255,.35)",lineHeight:1.5}}>
               Got feedback? Want a feature? Found a bug?
             </p>
-            <a href="mailto:YOUR_EMAIL@gmail.com?subject=Protein%20Tracker%20Feedback" style={{fontSize:".82rem",color:"#eab308",fontWeight:700,textDecoration:"none",display:"inline-block",marginTop:8}}>
-              📧 Send us feedback
+            <a href="https://t.me/protein_ka_chakkar" target="_blank" rel="noopener noreferrer" style={{fontSize:".82rem",color:"#0088cc",fontWeight:700,textDecoration:"none",display:"inline-block",marginTop:8}}>
+              ✈️ Tell us on Telegram
             </a>
           </div>
         </div>
