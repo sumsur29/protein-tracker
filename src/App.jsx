@@ -23,122 +23,145 @@ function getTodayKey() {
 }
 
 // ============ FOOD DATABASE ============
+// All protein values for COOKED/PREPARED servings (Indian style)
+// cal = approximate calories per serving
 const FOOD_DATA = [
-  // Dal & Pulses
-  { id:"chana", name:"Chana", nameHi:"छोले", emoji:"🫘", protein:15, serving:"1 bowl (150g)", category:"dal", veg:true },
-  { id:"rajma", name:"Rajma", nameHi:"राजमा", emoji:"🫘", protein:13, serving:"1 bowl (150g)", category:"dal", veg:true },
-  { id:"moong_dal", name:"Moong Dal", nameHi:"मूंग दाल", emoji:"🥣", protein:12, serving:"1 bowl", category:"dal", veg:true },
-  { id:"toor_dal", name:"Toor Dal", nameHi:"तूर दाल", emoji:"🥣", protein:10, serving:"1 bowl", category:"dal", veg:true },
-  { id:"masoor_dal", name:"Masoor Dal", nameHi:"मसूर दाल", emoji:"🥣", protein:9, serving:"1 bowl", category:"dal", veg:true },
-  { id:"urad_dal", name:"Urad Dal", nameHi:"उड़द दाल", emoji:"🥣", protein:12, serving:"1 bowl", category:"dal", veg:true },
-  { id:"chana_dal", name:"Chana Dal", nameHi:"चना दाल", emoji:"🥣", protein:11, serving:"1 bowl", category:"dal", veg:true },
-  { id:"sprouts", name:"Sprouts", nameHi:"अंकुरित", emoji:"🌱", protein:13, serving:"1 bowl", category:"dal", veg:true },
-  { id:"lobia", name:"Lobia", nameHi:"लोबिया", emoji:"🫘", protein:11, serving:"1 bowl", category:"dal", veg:true },
-  { id:"dal_makhani", name:"Dal Makhani", nameHi:"दाल मखनी", emoji:"🥣", protein:12, serving:"1 bowl", category:"dal", veg:true },
+  // Dal & Pulses (cooked, Indian style — NOT raw/dry values)
+  { id:"chana", name:"Chana", nameHi:"छोले", emoji:"🫘", protein:10, cal:180, serving:"1 bowl cooked", category:"dal", veg:true },
+  { id:"chana_half", name:"Chana (½ bowl)", nameHi:"छोले", emoji:"🫘", protein:5, cal:90, serving:"½ bowl", category:"dal", veg:true },
+  { id:"rajma", name:"Rajma", nameHi:"राजमा", emoji:"🫘", protein:9, cal:170, serving:"1 bowl cooked", category:"dal", veg:true },
+  { id:"rajma_half", name:"Rajma (½ bowl)", nameHi:"राजमा", emoji:"🫘", protein:5, cal:85, serving:"½ bowl", category:"dal", veg:true },
+  { id:"moong_dal", name:"Moong Dal", nameHi:"मूंग दाल", emoji:"🥣", protein:7, cal:120, serving:"1 bowl cooked", category:"dal", veg:true },
+  { id:"moong_dal_half", name:"Moong Dal (½ bowl)", nameHi:"मूंग दाल", emoji:"🥣", protein:4, cal:60, serving:"½ bowl", category:"dal", veg:true },
+  { id:"toor_dal", name:"Toor Dal", nameHi:"तूर दाल", emoji:"🥣", protein:7, cal:130, serving:"1 bowl cooked", category:"dal", veg:true },
+  { id:"masoor_dal", name:"Masoor Dal", nameHi:"मसूर दाल", emoji:"🥣", protein:7, cal:115, serving:"1 bowl cooked", category:"dal", veg:true },
+  { id:"urad_dal", name:"Urad Dal", nameHi:"उड़द दाल", emoji:"🥣", protein:8, cal:140, serving:"1 bowl cooked", category:"dal", veg:true },
+  { id:"chana_dal", name:"Chana Dal", nameHi:"चना दाल", emoji:"🥣", protein:8, cal:135, serving:"1 bowl cooked", category:"dal", veg:true },
+  { id:"sprouts", name:"Sprouts", nameHi:"अंकुरित", emoji:"🌱", protein:9, cal:100, serving:"1 bowl", category:"dal", veg:true },
+  { id:"lobia", name:"Lobia", nameHi:"लोबिया", emoji:"🫘", protein:8, cal:140, serving:"1 bowl cooked", category:"dal", veg:true },
+  { id:"dal_makhani", name:"Dal Makhani", nameHi:"दाल मखनी", emoji:"🥣", protein:8, cal:220, serving:"1 bowl cooked", category:"dal", veg:true },
+  { id:"dal_fry", name:"Dal Fry", nameHi:"दाल फ्राई", emoji:"🥣", protein:7, cal:150, serving:"1 bowl cooked", category:"dal", veg:true },
 
   // Dairy
-  { id:"paneer", name:"Paneer", nameHi:"पनीर", emoji:"🧀", protein:14, serving:"100g", category:"dairy", veg:true },
-  { id:"dahi", name:"Dahi / Curd", nameHi:"दही", emoji:"🥛", protein:8, serving:"1 bowl (200g)", category:"dairy", veg:true },
-  { id:"milk", name:"Milk", nameHi:"दूध", emoji:"🥛", protein:7, serving:"1 glass (250ml)", category:"dairy", veg:true },
-  { id:"chaach", name:"Chaach", nameHi:"छाछ", emoji:"🥛", protein:5, serving:"1 glass", category:"dairy", veg:true },
-  { id:"lassi", name:"Lassi", nameHi:"लस्सी", emoji:"🥤", protein:8, serving:"1 glass", category:"dairy", veg:true },
-  { id:"hung_curd", name:"Hung Curd", nameHi:"हंग कर्ड", emoji:"🍶", protein:10, serving:"1 bowl", category:"dairy", veg:true },
-  { id:"cheese", name:"Cheese Slice", nameHi:"चीज़", emoji:"🧀", protein:5, serving:"1 slice (20g)", category:"dairy", veg:true },
-  { id:"paneer_bhurji", name:"Paneer Bhurji", nameHi:"पनीर भुर्जी", emoji:"🍳", protein:18, serving:"1 plate", category:"dairy", veg:true },
+  { id:"paneer", name:"Paneer (8 cubes)", nameHi:"पनीर", emoji:"🧀", protein:14, cal:265, serving:"~100g / 8 cubes", category:"dairy", veg:true },
+  { id:"paneer_4cubes", name:"Paneer (4 cubes)", nameHi:"पनीर", emoji:"🧀", protein:7, cal:130, serving:"~50g / 4 cubes", category:"dairy", veg:true },
+  { id:"dahi", name:"Dahi / Curd", nameHi:"दही", emoji:"🥛", protein:8, cal:120, serving:"1 bowl (200g)", category:"dairy", veg:true },
+  { id:"milk_250", name:"Milk (1 glass)", nameHi:"दूध", emoji:"🥛", protein:8, cal:150, serving:"250ml", category:"dairy", veg:true },
+  { id:"milk_500", name:"Milk (large)", nameHi:"दूध", emoji:"🥛", protein:16, cal:300, serving:"500ml", category:"dairy", veg:true },
+  { id:"chaach", name:"Chaach", nameHi:"छाछ", emoji:"🥛", protein:5, cal:60, serving:"1 glass", category:"dairy", veg:true },
+  { id:"lassi", name:"Lassi", nameHi:"लस्सी", emoji:"🥤", protein:8, cal:180, serving:"1 glass", category:"dairy", veg:true },
+  { id:"hung_curd", name:"Hung Curd", nameHi:"हंग कर्ड", emoji:"🍶", protein:10, cal:100, serving:"1 bowl", category:"dairy", veg:true },
+  { id:"cheese", name:"Cheese Slice", nameHi:"चीज़", emoji:"🧀", protein:5, cal:70, serving:"1 slice (20g)", category:"dairy", veg:true },
+  { id:"paneer_bhurji", name:"Paneer Bhurji", nameHi:"पनीर भुर्जी", emoji:"🍳", protein:18, cal:320, serving:"1 plate (~120g)", category:"dairy", veg:true },
 
   // Branded
-  { id:"amul_pro_milk", name:"Amul Protein Milk", nameHi:"अमूल प्रोटीन", emoji:"🥛", protein:20, serving:"250ml", category:"brand", veg:true },
-  { id:"amul_protein_lassi", name:"Amul Protein Lassi", nameHi:"अमूल लस्सी", emoji:"🥤", protein:20, serving:"250ml", category:"brand", veg:true },
-  { id:"amul_protein_shake", name:"Amul Protein Shake", nameHi:"अमूल शेक", emoji:"🥤", protein:20, serving:"200ml", category:"brand", veg:true },
-  { id:"amul_greek_yogurt", name:"Amul Greek Yogurt", nameHi:"अमूल ग्रीक", emoji:"🍶", protein:14, serving:"125g", category:"brand", veg:true },
-  { id:"epigamia_protein_yog", name:"Epigamia Protein Yogurt", nameHi:"एपिगेमिया", emoji:"🍶", protein:15, serving:"120g", category:"brand", veg:true },
-  { id:"epigamia_protein_milk", name:"Epigamia Protein Milk", nameHi:"एपिगेमिया दूध", emoji:"🥛", protein:20, serving:"250ml", category:"brand", veg:true },
-  { id:"protinex", name:"Protinex (mixed)", nameHi:"प्रोटीनेक्स", emoji:"🥤", protein:17, serving:"2 scoops+milk", category:"brand", veg:true },
-  { id:"yoga_bar_protein", name:"Yoga Bar Protein Bar", nameHi:"योगा बार", emoji:"🍫", protein:20, serving:"1 bar (60g)", category:"brand", veg:true },
-  { id:"ritebite_bar", name:"RiteBite Max Protein", nameHi:"राइटबाइट", emoji:"🍫", protein:20, serving:"1 bar (70g)", category:"brand", veg:true },
-  { id:"true_elements_muesli", name:"True Elements Muesli", nameHi:"ट्रू एलीमेंट्स", emoji:"🥣", protein:15, serving:"50g", category:"brand", veg:true },
-  { id:"mother_dairy_protein", name:"Mother Dairy Shake", nameHi:"मदर डेयरी", emoji:"🥛", protein:18, serving:"250ml", category:"brand", veg:true },
-  { id:"go_protein", name:"Go Protein Milkshake", nameHi:"गो प्रोटीन", emoji:"🥤", protein:20, serving:"200ml", category:"brand", veg:true },
-  { id:"amul_paneer_100g", name:"Amul Malai Paneer", nameHi:"अमूल पनीर", emoji:"🧀", protein:18, serving:"100g", category:"brand", veg:true },
+  { id:"amul_pro_milk", name:"Amul Protein Milk", nameHi:"अमूल प्रोटीन", emoji:"🥛", protein:20, cal:160, serving:"250ml", category:"brand", veg:true },
+  { id:"amul_protein_lassi", name:"Amul Protein Lassi", nameHi:"अमूल लस्सी", emoji:"🥤", protein:20, cal:170, serving:"250ml", category:"brand", veg:true },
+  { id:"amul_protein_shake", name:"Amul Protein Shake", nameHi:"अमूल शेक", emoji:"🥤", protein:20, cal:180, serving:"200ml", category:"brand", veg:true },
+  { id:"amul_greek_yogurt", name:"Amul Greek Yogurt", nameHi:"अमूल ग्रीक", emoji:"🍶", protein:14, cal:120, serving:"125g", category:"brand", veg:true },
+  { id:"epigamia_protein_yog", name:"Epigamia Protein Yogurt", nameHi:"एपिगेमिया", emoji:"🍶", protein:15, cal:130, serving:"120g", category:"brand", veg:true },
+  { id:"epigamia_protein_milk", name:"Epigamia Protein Milk", nameHi:"एपिगेमिया दूध", emoji:"🥛", protein:20, cal:160, serving:"250ml", category:"brand", veg:true },
+  { id:"protinex", name:"Protinex (mixed)", nameHi:"प्रोटीनेक्स", emoji:"🥤", protein:17, cal:200, serving:"2 scoops+milk", category:"brand", veg:true },
+  { id:"yoga_bar_protein", name:"Yoga Bar Protein Bar", nameHi:"योगा बार", emoji:"🍫", protein:20, cal:280, serving:"1 bar (60g)", category:"brand", veg:true },
+  { id:"ritebite_bar", name:"RiteBite Max Protein", nameHi:"राइटबाइट", emoji:"🍫", protein:20, cal:260, serving:"1 bar (70g)", category:"brand", veg:true },
+  { id:"true_elements_muesli", name:"True Elements Muesli", nameHi:"ट्रू एलीमेंट्स", emoji:"🥣", protein:15, cal:200, serving:"50g", category:"brand", veg:true },
+  { id:"mother_dairy_protein", name:"Mother Dairy Shake", nameHi:"मदर डेयरी", emoji:"🥛", protein:18, cal:170, serving:"250ml", category:"brand", veg:true },
+  { id:"go_protein", name:"Go Protein Milkshake", nameHi:"गो प्रोटीन", emoji:"🥤", protein:20, cal:180, serving:"200ml", category:"brand", veg:true },
+  { id:"amul_paneer_100g", name:"Amul Malai Paneer", nameHi:"अमूल पनीर", emoji:"🧀", protein:18, cal:290, serving:"100g", category:"brand", veg:true },
 
-  // Protein Powders
-  { id:"on_whey", name:"ON Gold Standard Whey", nameHi:"ओ.एन. व्हे", emoji:"💪", protein:24, serving:"1 scoop (31g)", category:"powder", veg:true },
-  { id:"mb_biozyme", name:"MuscleBlaze Biozyme", nameHi:"बायोज़ाइम", emoji:"💪", protein:25, serving:"1 scoop (33g)", category:"powder", veg:true },
-  { id:"mb_raw_whey", name:"MuscleBlaze Raw Whey", nameHi:"रॉ व्हे", emoji:"💪", protein:24, serving:"1 scoop (33g)", category:"powder", veg:true },
-  { id:"myprotein_impact", name:"Myprotein Impact Whey", nameHi:"माइप्रोटीन", emoji:"💪", protein:21, serving:"1 scoop (25g)", category:"powder", veg:true },
-  { id:"nakpro_perform", name:"Nakpro Perform Whey", nameHi:"नकप्रो", emoji:"💪", protein:24, serving:"1 scoop (33g)", category:"powder", veg:true },
-  { id:"as_it_is_whey", name:"AS-IT-IS Whey", nameHi:"एज़-इट-इज़", emoji:"💪", protein:24, serving:"1 scoop (30g)", category:"powder", veg:true },
-  { id:"oziva_plant", name:"OZiva Plant Protein", nameHi:"ओज़िवा", emoji:"🌿", protein:25, serving:"1 scoop (40g)", category:"powder", veg:true },
-  { id:"boldfit_whey", name:"Boldfit Whey", nameHi:"बोल्डफिट", emoji:"💪", protein:24, serving:"1 scoop (33g)", category:"powder", veg:true },
-  { id:"fast_up_plant", name:"Fast&Up Plant Protein", nameHi:"फ़ास्ट एंड अप", emoji:"🌿", protein:30, serving:"1 scoop (45g)", category:"powder", veg:true },
-  { id:"avvatar_whey", name:"Avvatar Whey", nameHi:"अवतार व्हे", emoji:"💪", protein:24, serving:"1 scoop (32g)", category:"powder", veg:true },
-  { id:"plix_plant", name:"Plix Plant Protein", nameHi:"प्लिक्स", emoji:"🌿", protein:25, serving:"1 scoop (35g)", category:"powder", veg:true },
-  { id:"sattu_powder", name:"Sattu Powder", nameHi:"सत्तू", emoji:"🥤", protein:20, serving:"2 tbsp (40g)", category:"powder", veg:true },
+  // Protein Powders (1 scoop + 1.5 scoop options)
+  { id:"on_whey", name:"ON Gold Standard", nameHi:"ओ.एन.", emoji:"💪", protein:24, cal:120, serving:"1 scoop (31g)", category:"powder", veg:true },
+  { id:"on_whey_15", name:"ON Gold Standard 1.5x", nameHi:"ओ.एन.", emoji:"💪", protein:36, cal:180, serving:"1.5 scoops", category:"powder", veg:true },
+  { id:"mb_biozyme", name:"MB Biozyme", nameHi:"बायोज़ाइम", emoji:"💪", protein:25, cal:130, serving:"1 scoop (33g)", category:"powder", veg:true },
+  { id:"mb_biozyme_15", name:"MB Biozyme 1.5x", nameHi:"बायोज़ाइम", emoji:"💪", protein:38, cal:195, serving:"1.5 scoops", category:"powder", veg:true },
+  { id:"mb_raw_whey", name:"MB Raw Whey", nameHi:"रॉ व्हे", emoji:"💪", protein:24, cal:120, serving:"1 scoop (33g)", category:"powder", veg:true },
+  { id:"myprotein_impact", name:"Myprotein Impact", nameHi:"माइप्रोटीन", emoji:"💪", protein:21, cal:103, serving:"1 scoop (25g)", category:"powder", veg:true },
+  { id:"nakpro_perform", name:"Nakpro Perform", nameHi:"नकप्रो", emoji:"💪", protein:24, cal:125, serving:"1 scoop (33g)", category:"powder", veg:true },
+  { id:"as_it_is_whey", name:"AS-IT-IS Whey", nameHi:"एज़-इट-इज़", emoji:"💪", protein:24, cal:117, serving:"1 scoop (30g)", category:"powder", veg:true },
+  { id:"oziva_plant", name:"OZiva Plant Protein", nameHi:"ओज़िवा", emoji:"🌿", protein:25, cal:160, serving:"1 scoop (40g)", category:"powder", veg:true },
+  { id:"boldfit_whey", name:"Boldfit Whey", nameHi:"बोल्डफिट", emoji:"💪", protein:24, cal:130, serving:"1 scoop (33g)", category:"powder", veg:true },
+  { id:"fast_up_plant", name:"Fast&Up Plant", nameHi:"फ़ास्ट एंड अप", emoji:"🌿", protein:30, cal:175, serving:"1 scoop (45g)", category:"powder", veg:true },
+  { id:"avvatar_whey", name:"Avvatar Whey", nameHi:"अवतार", emoji:"💪", protein:24, cal:128, serving:"1 scoop (32g)", category:"powder", veg:true },
+  { id:"plix_plant", name:"Plix Plant Protein", nameHi:"प्लिक्स", emoji:"🌿", protein:25, cal:145, serving:"1 scoop (35g)", category:"powder", veg:true },
+  { id:"sattu_powder", name:"Sattu Powder", nameHi:"सत्तू", emoji:"🥤", protein:20, cal:170, serving:"2 tbsp (40g)", category:"powder", veg:true },
 
   // Soy & Nuts
-  { id:"soy_chunks", name:"Soy Chunks", nameHi:"सोया चंक्स", emoji:"🟤", protein:26, serving:"50g dry", category:"soy", veg:true },
-  { id:"tofu", name:"Tofu", nameHi:"टोफू", emoji:"🟨", protein:10, serving:"100g", category:"soy", veg:true },
-  { id:"soy_milk", name:"Soy Milk", nameHi:"सोया दूध", emoji:"🥛", protein:7, serving:"1 glass", category:"soy", veg:true },
-  { id:"peanuts", name:"Peanuts", nameHi:"मूंगफली", emoji:"🥜", protein:7, serving:"30g", category:"soy", veg:true },
-  { id:"almonds", name:"Almonds", nameHi:"बादाम", emoji:"🌰", protein:6, serving:"15 pcs", category:"soy", veg:true },
-  { id:"peanut_butter", name:"Peanut Butter", nameHi:"पीनट बटर", emoji:"🥜", protein:8, serving:"2 tbsp", category:"soy", veg:true },
-  { id:"cashews", name:"Cashews", nameHi:"काजू", emoji:"🥜", protein:5, serving:"15 pcs", category:"soy", veg:true },
-  { id:"chana_roasted", name:"Roasted Chana", nameHi:"भुना चना", emoji:"🫘", protein:10, serving:"50g", category:"soy", veg:true },
-  { id:"flax_seeds", name:"Flax Seeds", nameHi:"अलसी", emoji:"🌱", protein:5, serving:"2 tbsp", category:"soy", veg:true },
-  { id:"hemp_seeds", name:"Hemp Seeds", nameHi:"भांग बीज", emoji:"🌱", protein:10, serving:"3 tbsp", category:"soy", veg:true },
+  { id:"soy_chunks", name:"Soy Chunks", nameHi:"सोया चंक्स", emoji:"🟤", protein:26, cal:170, serving:"50g dry", category:"soy", veg:true },
+  { id:"tofu", name:"Tofu", nameHi:"टोफू", emoji:"🟨", protein:10, cal:80, serving:"100g", category:"soy", veg:true },
+  { id:"soy_milk", name:"Soy Milk", nameHi:"सोया दूध", emoji:"🥛", protein:7, cal:80, serving:"1 glass", category:"soy", veg:true },
+  { id:"peanuts", name:"Peanuts", nameHi:"मूंगफली", emoji:"🥜", protein:7, cal:170, serving:"30g", category:"soy", veg:true },
+  { id:"almonds", name:"Almonds", nameHi:"बादाम", emoji:"🌰", protein:6, cal:170, serving:"15 pcs", category:"soy", veg:true },
+  { id:"peanut_butter", name:"Peanut Butter", nameHi:"पीनट बटर", emoji:"🥜", protein:8, cal:190, serving:"2 tbsp (32g)", category:"soy", veg:true },
+  { id:"cashews", name:"Cashews", nameHi:"काजू", emoji:"🥜", protein:5, cal:160, serving:"15 pcs", category:"soy", veg:true },
+  { id:"chana_roasted", name:"Roasted Chana", nameHi:"भुना चना", emoji:"🫘", protein:10, cal:190, serving:"50g", category:"soy", veg:true },
+  { id:"flax_seeds", name:"Flax Seeds", nameHi:"अलसी", emoji:"🌱", protein:5, cal:110, serving:"2 tbsp", category:"soy", veg:true },
+  { id:"hemp_seeds", name:"Hemp Seeds", nameHi:"भांग बीज", emoji:"🌱", protein:10, cal:115, serving:"3 tbsp", category:"soy", veg:true },
 
-  // Grains
-  { id:"roti", name:"Roti", nameHi:"रोटी", emoji:"🫓", protein:3, serving:"1 pc", category:"grain", veg:true },
-  { id:"paratha", name:"Paratha", nameHi:"पराठा", emoji:"🫓", protein:4, serving:"1 pc", category:"grain", veg:true },
-  { id:"rice", name:"Rice", nameHi:"चावल", emoji:"🍚", protein:4, serving:"1 bowl", category:"grain", veg:true },
-  { id:"poha", name:"Poha", nameHi:"पोहा", emoji:"🍚", protein:5, serving:"1 plate", category:"grain", veg:true },
-  { id:"upma", name:"Upma", nameHi:"उपमा", emoji:"🍲", protein:5, serving:"1 bowl", category:"grain", veg:true },
-  { id:"idli", name:"Idli", nameHi:"इडली", emoji:"⚪", protein:4, serving:"2 pcs", category:"grain", veg:true },
-  { id:"dosa", name:"Dosa", nameHi:"डोसा", emoji:"🥞", protein:5, serving:"1 pc", category:"grain", veg:true },
-  { id:"besan_chilla", name:"Besan Chilla", nameHi:"बेसन चीला", emoji:"🥞", protein:10, serving:"2 pcs", category:"grain", veg:true },
-  { id:"oats", name:"Oats", nameHi:"ओट्स", emoji:"🥣", protein:5, serving:"40g", category:"grain", veg:true },
-  { id:"daliya", name:"Daliya", nameHi:"दलिया", emoji:"🥣", protein:6, serving:"1 bowl", category:"grain", veg:true },
-  { id:"multigrain_roti", name:"Multigrain Roti", nameHi:"मल्टीग्रेन", emoji:"🫓", protein:5, serving:"1 pc", category:"grain", veg:true },
-  { id:"chickpea_pasta", name:"Chickpea Pasta", nameHi:"चने का पास्ता", emoji:"🍝", protein:14, serving:"100g dry", category:"grain", veg:true },
-  { id:"lentil_pasta", name:"Lentil Pasta (Red)", nameHi:"दाल पास्ता", emoji:"🍝", protein:13, serving:"100g dry", category:"grain", veg:true },
-  { id:"soy_pasta", name:"Soy Pasta", nameHi:"सोया पास्ता", emoji:"🍝", protein:20, serving:"100g dry", category:"grain", veg:true },
-  { id:"quinoa", name:"Quinoa", nameHi:"क्विनोआ", emoji:"🌾", protein:8, serving:"1 bowl cooked", category:"grain", veg:true },
-  { id:"brown_rice", name:"Brown Rice", nameHi:"ब्राउन राइस", emoji:"🍚", protein:5, serving:"1 bowl", category:"grain", veg:true },
-  { id:"amaranth", name:"Amaranth / Rajgira", nameHi:"राजगिरा", emoji:"🌾", protein:7, serving:"50g dry", category:"grain", veg:true },
-  { id:"buckwheat", name:"Buckwheat / Kuttu", nameHi:"कुट्टू", emoji:"🌾", protein:6, serving:"50g dry", category:"grain", veg:true },
-  { id:"protein_roti", name:"Protein Atta Roti", nameHi:"प्रोटीन आटा", emoji:"🫓", protein:6, serving:"1 pc", category:"grain", veg:true },
-  { id:"millets", name:"Millet (Bajra/Jowar)", nameHi:"बाजरा/ज्वार", emoji:"🌾", protein:5, serving:"1 roti", category:"grain", veg:true },
+  // Grains & Rotis (different types)
+  { id:"roti_wheat", name:"Wheat Roti", nameHi:"गेहूं रोटी", emoji:"🫓", protein:3, cal:100, serving:"1 pc", category:"grain", veg:true },
+  { id:"roti_jowar", name:"Jowar Roti", nameHi:"ज्वार रोटी", emoji:"🫓", protein:4, cal:110, serving:"1 pc", category:"grain", veg:true },
+  { id:"roti_bajra", name:"Bajra Roti", nameHi:"बाजरा रोटी", emoji:"🫓", protein:4, cal:120, serving:"1 pc", category:"grain", veg:true },
+  { id:"roti_ragi", name:"Ragi Roti", nameHi:"रागी रोटी", emoji:"🫓", protein:3, cal:105, serving:"1 pc", category:"grain", veg:true },
+  { id:"multigrain_roti", name:"Multigrain Roti", nameHi:"मल्टीग्रेन", emoji:"🫓", protein:5, cal:115, serving:"1 pc", category:"grain", veg:true },
+  { id:"protein_roti", name:"Protein Atta Roti", nameHi:"प्रोटीन आटा", emoji:"🫓", protein:6, cal:120, serving:"1 pc", category:"grain", veg:true },
+  { id:"paratha", name:"Paratha", nameHi:"पराठा", emoji:"🫓", protein:4, cal:180, serving:"1 pc", category:"grain", veg:true },
+  { id:"rice", name:"Rice (white)", nameHi:"चावल", emoji:"🍚", protein:4, cal:200, serving:"1 bowl", category:"grain", veg:true },
+  { id:"brown_rice", name:"Brown Rice", nameHi:"ब्राउन राइस", emoji:"🍚", protein:5, cal:215, serving:"1 bowl", category:"grain", veg:true },
+  { id:"poha", name:"Poha", nameHi:"पोहा", emoji:"🍚", protein:5, cal:250, serving:"1 plate", category:"grain", veg:true },
+  { id:"upma", name:"Upma", nameHi:"उपमा", emoji:"🍲", protein:5, cal:230, serving:"1 bowl", category:"grain", veg:true },
+  { id:"idli", name:"Idli", nameHi:"इडली", emoji:"⚪", protein:4, cal:120, serving:"2 pcs", category:"grain", veg:true },
+  { id:"dosa", name:"Dosa", nameHi:"डोसा", emoji:"🥞", protein:5, cal:170, serving:"1 pc", category:"grain", veg:true },
+  { id:"besan_chilla", name:"Besan Chilla", nameHi:"बेसन चीला", emoji:"🥞", protein:10, cal:200, serving:"2 pcs", category:"grain", veg:true },
+  { id:"oats", name:"Oats", nameHi:"ओट्स", emoji:"🥣", protein:5, cal:155, serving:"40g", category:"grain", veg:true },
+  { id:"daliya", name:"Daliya", nameHi:"दलिया", emoji:"🥣", protein:6, cal:180, serving:"1 bowl", category:"grain", veg:true },
+  { id:"quinoa", name:"Quinoa", nameHi:"क्विनोआ", emoji:"🌾", protein:8, cal:220, serving:"1 bowl cooked", category:"grain", veg:true },
+  { id:"chickpea_pasta", name:"Chickpea Pasta", nameHi:"चने का पास्ता", emoji:"🍝", protein:14, cal:350, serving:"100g dry", category:"grain", veg:true },
+  { id:"lentil_pasta", name:"Lentil Pasta", nameHi:"दाल पास्ता", emoji:"🍝", protein:13, cal:340, serving:"100g dry", category:"grain", veg:true },
+  { id:"soy_pasta", name:"Soy Pasta", nameHi:"सोया पास्ता", emoji:"🍝", protein:20, cal:330, serving:"100g dry", category:"grain", veg:true },
+
+  // Global / Fusion foods
+  { id:"paneer_wrap", name:"Paneer Wrap", nameHi:"पनीर रैप", emoji:"🌯", protein:16, cal:380, serving:"1 wrap", category:"global", veg:true },
+  { id:"paneer_burrito", name:"Paneer Burrito", nameHi:"पनीर बरिटो", emoji:"🌯", protein:18, cal:450, serving:"1 pc", category:"global", veg:true },
+  { id:"falafel_wrap", name:"Falafel Wrap", nameHi:"फलाफ़ेल रैप", emoji:"🌯", protein:12, cal:400, serving:"1 wrap", category:"global", veg:true },
+  { id:"hummus", name:"Hummus", nameHi:"हम्मस", emoji:"🫘", protein:8, cal:180, serving:"4 tbsp", category:"global", veg:true },
+  { id:"grilled_sandwich", name:"Grilled Cheese Sandwich", nameHi:"ग्रिल्ड सैंडविच", emoji:"🥪", protein:12, cal:350, serving:"1 pc", category:"global", veg:true },
+  { id:"paneer_sandwich", name:"Paneer Sandwich", nameHi:"पनीर सैंडविच", emoji:"🥪", protein:14, cal:320, serving:"1 pc", category:"global", veg:true },
+  { id:"veg_sandwich", name:"Veg Sandwich", nameHi:"वेज सैंडविच", emoji:"🥪", protein:7, cal:220, serving:"1 pc", category:"global", veg:true },
+  { id:"pb_sandwich", name:"PB Sandwich", nameHi:"पीबी सैंडविच", emoji:"🥪", protein:12, cal:350, serving:"1 pc (2 tbsp PB)", category:"global", veg:true },
+  { id:"greek_salad_paneer", name:"Greek Salad + Paneer", nameHi:"ग्रीक सलाद", emoji:"🥗", protein:15, cal:280, serving:"1 bowl", category:"global", veg:true },
+  { id:"burrito_bowl", name:"Burrito Bowl (Rajma)", nameHi:"बरिटो बाउल", emoji:"🥗", protein:14, cal:400, serving:"1 bowl", category:"global", veg:true },
+  { id:"pasta_alfredo", name:"Pasta Alfredo (Paneer)", nameHi:"पास्ता अल्फ्रेडो", emoji:"🍝", protein:16, cal:480, serving:"1 plate", category:"global", veg:true },
+  { id:"pizza_paneer", name:"Paneer Pizza Slice", nameHi:"पनीर पिज़्ज़ा", emoji:"🍕", protein:10, cal:280, serving:"1 slice", category:"global", veg:true },
+  { id:"chicken_sandwich", name:"Chicken Sandwich", nameHi:"चिकन सैंडविच", emoji:"🥪", protein:20, cal:380, serving:"1 pc", category:"global", veg:false },
+  { id:"chicken_wrap", name:"Chicken Wrap", nameHi:"चिकन रैप", emoji:"🌯", protein:22, cal:400, serving:"1 wrap", category:"global", veg:false },
+  { id:"chicken_burger", name:"Chicken Burger", nameHi:"चिकन बर्गर", emoji:"🍔", protein:20, cal:450, serving:"1 pc", category:"global", veg:false },
+  { id:"shawarma_chicken", name:"Chicken Shawarma", nameHi:"चिकन शवर्मा", emoji:"🌯", protein:22, cal:420, serving:"1 roll", category:"global", veg:false },
 
   // Veg Snacks
-  { id:"samosa", name:"Samosa", nameHi:"समोसा", emoji:"🔺", protein:3, serving:"1 pc", category:"snack", veg:true },
-  { id:"dhokla", name:"Dhokla", nameHi:"ढोकला", emoji:"🟨", protein:7, serving:"4 pcs", category:"snack", veg:true },
-  { id:"chana_chaat", name:"Chana Chaat", nameHi:"चना चाट", emoji:"🥗", protein:10, serving:"1 bowl", category:"snack", veg:true },
-  { id:"thepla", name:"Thepla", nameHi:"थेपला", emoji:"🫓", protein:5, serving:"2 pcs", category:"snack", veg:true },
-  { id:"makhana", name:"Makhana", nameHi:"मखाना", emoji:"⚪", protein:5, serving:"1 bowl", category:"snack", veg:true },
-  { id:"moong_chilla", name:"Moong Dal Chilla", nameHi:"मूंग चीला", emoji:"🥞", protein:12, serving:"2 pcs", category:"snack", veg:true },
+  { id:"samosa", name:"Samosa", nameHi:"समोसा", emoji:"🔺", protein:3, cal:250, serving:"1 pc", category:"snack", veg:true },
+  { id:"dhokla", name:"Dhokla", nameHi:"ढोकला", emoji:"🟨", protein:7, cal:160, serving:"4 pcs", category:"snack", veg:true },
+  { id:"chana_chaat", name:"Chana Chaat", nameHi:"चना चाट", emoji:"🥗", protein:10, cal:200, serving:"1 bowl", category:"snack", veg:true },
+  { id:"thepla", name:"Thepla", nameHi:"थेपला", emoji:"🫓", protein:5, cal:200, serving:"2 pcs", category:"snack", veg:true },
+  { id:"makhana", name:"Makhana", nameHi:"मखाना", emoji:"⚪", protein:5, cal:100, serving:"1 bowl", category:"snack", veg:true },
+  { id:"moong_chilla", name:"Moong Dal Chilla", nameHi:"मूंग चीला", emoji:"🥞", protein:12, cal:200, serving:"2 pcs", category:"snack", veg:true },
 
   // ==== NON-VEG ====
-  // Eggs
-  { id:"egg_boiled", name:"Boiled Egg", nameHi:"उबला अंडा", emoji:"🥚", protein:6, serving:"1 pc", category:"nonveg", veg:false },
-  { id:"egg_bhurji", name:"Egg Bhurji", nameHi:"अंडा भुर्जी", emoji:"🍳", protein:14, serving:"2 eggs", category:"nonveg", veg:false },
-  { id:"omelette", name:"Omelette", nameHi:"आमलेट", emoji:"🍳", protein:12, serving:"2 eggs", category:"nonveg", veg:false },
-  { id:"egg_curry", name:"Egg Curry", nameHi:"अंडा करी", emoji:"🥘", protein:14, serving:"2 eggs", category:"nonveg", veg:false },
-
-  // Chicken
-  { id:"chicken_breast", name:"Chicken Breast", nameHi:"चिकन ब्रेस्ट", emoji:"🍗", protein:31, serving:"100g", category:"nonveg", veg:false },
-  { id:"chicken_curry", name:"Chicken Curry", nameHi:"चिकन करी", emoji:"🍛", protein:22, serving:"1 bowl", category:"nonveg", veg:false },
-  { id:"tandoori_chicken", name:"Tandoori Chicken", nameHi:"तंदूरी चिकन", emoji:"🍗", protein:25, serving:"2 pcs", category:"nonveg", veg:false },
-  { id:"chicken_tikka", name:"Chicken Tikka", nameHi:"चिकन टिक्का", emoji:"🍢", protein:24, serving:"6 pcs", category:"nonveg", veg:false },
-  { id:"butter_chicken", name:"Butter Chicken", nameHi:"बटर चिकन", emoji:"🍛", protein:20, serving:"1 bowl", category:"nonveg", veg:false },
-  { id:"chicken_biryani", name:"Chicken Biryani", nameHi:"चिकन बिरयानी", emoji:"🍚", protein:22, serving:"1 plate", category:"nonveg", veg:false },
-
-  // Fish & Mutton
-  { id:"fish_fry", name:"Fish Fry", nameHi:"फिश फ्राई", emoji:"🐟", protein:20, serving:"1 pc", category:"nonveg", veg:false },
-  { id:"fish_curry", name:"Fish Curry", nameHi:"फिश करी", emoji:"🍛", protein:18, serving:"1 bowl", category:"nonveg", veg:false },
-  { id:"prawns", name:"Prawns", nameHi:"झींगा", emoji:"🦐", protein:20, serving:"100g", category:"nonveg", veg:false },
-  { id:"mutton_curry", name:"Mutton Curry", nameHi:"मटन करी", emoji:"🍖", protein:25, serving:"1 bowl", category:"nonveg", veg:false },
-  { id:"keema", name:"Keema", nameHi:"कीमा", emoji:"🍖", protein:22, serving:"1 bowl", category:"nonveg", veg:false },
-  { id:"chicken_momos", name:"Chicken Momos", nameHi:"चिकन मोमो", emoji:"🥟", protein:12, serving:"6 pcs", category:"nonveg", veg:false },
+  { id:"egg_boiled", name:"Boiled Egg", nameHi:"उबला अंडा", emoji:"🥚", protein:6, cal:70, serving:"1 pc", category:"nonveg", veg:false },
+  { id:"egg_bhurji", name:"Egg Bhurji", nameHi:"अंडा भुर्जी", emoji:"🍳", protein:14, cal:200, serving:"2 eggs", category:"nonveg", veg:false },
+  { id:"omelette", name:"Omelette", nameHi:"आमलेट", emoji:"🍳", protein:12, cal:180, serving:"2 eggs", category:"nonveg", veg:false },
+  { id:"egg_curry", name:"Egg Curry", nameHi:"अंडा करी", emoji:"🥘", protein:14, cal:250, serving:"2 eggs", category:"nonveg", veg:false },
+  { id:"chicken_breast", name:"Chicken Breast", nameHi:"चिकन ब्रेस्ट", emoji:"🍗", protein:31, cal:165, serving:"100g", category:"nonveg", veg:false },
+  { id:"chicken_curry", name:"Chicken Curry", nameHi:"चिकन करी", emoji:"🍛", protein:22, cal:300, serving:"1 bowl", category:"nonveg", veg:false },
+  { id:"tandoori_chicken", name:"Tandoori Chicken", nameHi:"तंदूरी चिकन", emoji:"🍗", protein:25, cal:260, serving:"2 pcs", category:"nonveg", veg:false },
+  { id:"chicken_tikka", name:"Chicken Tikka", nameHi:"चिकन टिक्का", emoji:"🍢", protein:24, cal:240, serving:"6 pcs", category:"nonveg", veg:false },
+  { id:"butter_chicken", name:"Butter Chicken", nameHi:"बटर चिकन", emoji:"🍛", protein:20, cal:400, serving:"1 bowl", category:"nonveg", veg:false },
+  { id:"chicken_biryani", name:"Chicken Biryani", nameHi:"चिकन बिरयानी", emoji:"🍚", protein:22, cal:500, serving:"1 plate", category:"nonveg", veg:false },
+  { id:"fish_fry", name:"Fish Fry", nameHi:"फिश फ्राई", emoji:"🐟", protein:20, cal:230, serving:"1 pc", category:"nonveg", veg:false },
+  { id:"fish_curry", name:"Fish Curry", nameHi:"फिश करी", emoji:"🍛", protein:18, cal:250, serving:"1 bowl", category:"nonveg", veg:false },
+  { id:"prawns", name:"Prawns", nameHi:"झींगा", emoji:"🦐", protein:20, cal:100, serving:"100g", category:"nonveg", veg:false },
+  { id:"mutton_curry", name:"Mutton Curry", nameHi:"मटन करी", emoji:"🍖", protein:25, cal:400, serving:"1 bowl", category:"nonveg", veg:false },
+  { id:"keema", name:"Keema", nameHi:"कीमा", emoji:"🍖", protein:22, cal:350, serving:"1 bowl", category:"nonveg", veg:false },
+  { id:"chicken_momos", name:"Chicken Momos", nameHi:"चिकन मोमो", emoji:"🥟", protein:12, cal:250, serving:"6 pcs", category:"nonveg", veg:false },
 ];
 
 const CATEGORIES = [
@@ -148,7 +171,8 @@ const CATEGORIES = [
   { id:"brand", label:"Brands", emoji:"🏷️" },
   { id:"powder", label:"Protein Powder", emoji:"💪" },
   { id:"soy", label:"Soy & Nuts", emoji:"🥜" },
-  { id:"grain", label:"Grains", emoji:"🫓" },
+  { id:"grain", label:"Grains & Rotis", emoji:"🫓" },
+  { id:"global", label:"Global / Fusion", emoji:"🌯" },
   { id:"snack", label:"Snacks", emoji:"🥗" },
   { id:"nonveg", label:"Non-Veg", emoji:"🍗" },
 ];
@@ -176,10 +200,10 @@ const PROTEIN_TIPS = [
 ];
 
 const MESSAGES = {
-  low:["Abhi toh shuruat hai! 💪","Thoda aur protein chahiye!","Keep going!"],
-  mid:["Accha ja raha hai! 🔥","Halfway — ek bowl dal aur!","Nice progress!"],
-  high:["Almost done! 🎯","Bas thoda sa aur!","Killing it today!"],
-  done:["FULL PROTEIN! 🏆","Target hit — maa proud hogi! 💚","Champion! 🎉"],
+  low:["Picture abhi baaki hai mere dost! 🎬","Abhi toh party shuru hui hai 💪","Kitne grams the? Chal koi nahi 🔥"],
+  mid:["Ye dil maange more protein! 🫡","Half-century! Aur thoda push kar 🏏","Thoda aur — don ko pakadna mushkil hi nahi..."],
+  high:["Almost there — all izz well! 🎯","Bas ek aur serving — tera time aayega! ⏰","Kuch kuch protein hota hai 💛"],
+  done:["Mogambo khush hua! 🏆","Don ko pakad liya — target done! 💚","Apna time aa gaya! 🎉","Ja Simran jee le apni protein life! 🔥"],
 };
 
 function getMsg(c,t){const p=c/t;const a=p>=1?MESSAGES.done:p>=.7?MESSAGES.high:p>=.3?MESSAGES.mid:MESSAGES.low;return a[Math.floor(Math.random()*a.length)];}
@@ -211,17 +235,20 @@ function FoodCard({food,count,onAdd,onRemove}){
       background:a?"rgba(234,179,8,.12)":"rgba(255,255,255,.03)",
       border:a?"1.5px solid rgba(234,179,8,.35)":"1.5px solid rgba(255,255,255,.07)",
       borderRadius:14,padding:"10px 6px",cursor:"pointer",
-      display:"flex",flexDirection:"column",alignItems:"center",gap:3,
-      position:"relative",userSelect:"none",minHeight:100,transition:"all .15s",
+      display:"flex",flexDirection:"column",alignItems:"center",gap:2,
+      position:"relative",userSelect:"none",minHeight:115,transition:"all .15s",
     }}>
       {!food.veg&&<div style={{position:"absolute",top:4,left:4,width:10,height:10,border:"1.5px solid #ef4444",borderRadius:2,display:"flex",alignItems:"center",justifyContent:"center"}}><div style={{width:5,height:5,borderRadius:"50%",background:"#ef4444"}}/></div>}
       {food.veg&&<div style={{position:"absolute",top:4,left:4,width:10,height:10,border:"1.5px solid #22c55e",borderRadius:2,display:"flex",alignItems:"center",justifyContent:"center"}}><div style={{width:5,height:5,borderRadius:"50%",background:"#22c55e"}}/></div>}
-      <span style={{fontSize:"1.5rem",lineHeight:1,marginTop:4}}>{food.emoji}</span>
-      <span style={{fontSize:".68rem",fontWeight:700,color:"#fff",textAlign:"center",lineHeight:1.15,fontFamily:"'Nunito',sans-serif"}}>{food.name}</span>
-      <span style={{fontSize:".55rem",color:"rgba(255,255,255,.3)",textAlign:"center",lineHeight:1.1}}>{food.serving}</span>
-      <span style={{fontSize:".8rem",fontWeight:800,color:"#eab308",fontFamily:"'Teko',sans-serif"}}>{food.protein}g</span>
+      <span style={{fontSize:"1.4rem",lineHeight:1,marginTop:4}}>{food.emoji}</span>
+      <span style={{fontSize:".66rem",fontWeight:700,color:"#fff",textAlign:"center",lineHeight:1.15,fontFamily:"'Nunito',sans-serif"}}>{food.name}</span>
+      <span style={{fontSize:".52rem",color:"rgba(255,255,255,.25)",textAlign:"center",lineHeight:1.1}}>{food.serving}</span>
+      <div style={{display:"flex",alignItems:"center",gap:6}}>
+        <span style={{fontSize:".78rem",fontWeight:800,color:"#eab308",fontFamily:"'Teko',sans-serif"}}>{food.protein}g</span>
+        {food.cal&&<span style={{fontSize:".58rem",color:"rgba(255,255,255,.2)",fontFamily:"'Teko',sans-serif"}}>{food.cal}cal</span>}
+      </div>
       {/* Qty stepper */}
-      <div style={{display:"flex",alignItems:"center",gap:0,marginTop:2}} onClick={e=>e.stopPropagation()}>
+      <div style={{display:"flex",alignItems:"center",gap:0,marginTop:1}} onClick={e=>e.stopPropagation()}>
         <button onClick={(e)=>{e.stopPropagation();onRemove();}} style={{
           width:26,height:24,borderRadius:"8px 0 0 8px",border:"1px solid rgba(255,255,255,.1)",
           background:count>0?"rgba(239,68,68,.15)":"rgba(255,255,255,.04)",color:count>0?"#ef4444":"rgba(255,255,255,.2)",
@@ -306,8 +333,8 @@ function ProteinCalcModal({onClose,onSetTarget}){
 }
 
 function AddCustomModal({onAdd,onClose}){
-  const[name,setName]=useState("");const[protein,setProtein]=useState("");const[serving,setServing]=useState("");const[isVeg,setIsVeg]=useState(true);
-  const submit=()=>{if(!name.trim()||!protein)return;onAdd({id:"c_"+Date.now(),name:name.trim(),nameHi:"",emoji:"✨",protein:parseInt(protein)||0,serving:serving.trim()||"1 serving",category:"custom",isCustom:true,veg:isVeg});onClose();};
+  const[name,setName]=useState("");const[protein,setProtein]=useState("");const[cal,setCal]=useState("");const[serving,setServing]=useState("");const[isVeg,setIsVeg]=useState(true);
+  const submit=()=>{if(!name.trim()||!protein)return;onAdd({id:"c_"+Date.now(),name:name.trim(),nameHi:"",emoji:"✨",protein:parseInt(protein)||0,cal:parseInt(cal)||0,serving:serving.trim()||"1 serving",category:"custom",isCustom:true,veg:isVeg});onClose();};
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:20,backdropFilter:"blur(8px)"}}>
       <div onClick={e=>e.stopPropagation()} style={{background:"#1a1a1a",border:"1px solid rgba(255,255,255,.1)",borderRadius:20,padding:24,width:"100%",maxWidth:360}}>
@@ -317,8 +344,9 @@ function AddCustomModal({onAdd,onClose}){
           <input value={name} onChange={e=>setName(e.target.value)} placeholder="Food or brand name" style={{background:"rgba(255,255,255,.06)",border:"1px solid rgba(255,255,255,.1)",borderRadius:12,padding:"11px 14px",color:"#fff",fontSize:".88rem",outline:"none"}}/>
           <div style={{display:"flex",gap:8}}>
             <input value={protein} onChange={e=>setProtein(e.target.value)} placeholder="Protein (g)" type="number" style={{flex:1,background:"rgba(255,255,255,.06)",border:"1px solid rgba(255,255,255,.1)",borderRadius:12,padding:"11px 14px",color:"#fff",fontSize:".88rem",outline:"none"}}/>
-            <input value={serving} onChange={e=>setServing(e.target.value)} placeholder="Serving" style={{flex:1,background:"rgba(255,255,255,.06)",border:"1px solid rgba(255,255,255,.1)",borderRadius:12,padding:"11px 14px",color:"#fff",fontSize:".88rem",outline:"none"}}/>
+            <input value={cal} onChange={e=>setCal(e.target.value)} placeholder="Calories" type="number" style={{flex:1,background:"rgba(255,255,255,.06)",border:"1px solid rgba(255,255,255,.1)",borderRadius:12,padding:"11px 14px",color:"#fff",fontSize:".88rem",outline:"none"}}/>
           </div>
+          <input value={serving} onChange={e=>setServing(e.target.value)} placeholder="Serving size (e.g. 1 bowl, 100g)" style={{background:"rgba(255,255,255,.06)",border:"1px solid rgba(255,255,255,.1)",borderRadius:12,padding:"11px 14px",color:"#fff",fontSize:".88rem",outline:"none"}}/>
           <div style={{display:"flex",gap:8}}>
             <button onClick={()=>setIsVeg(true)} style={{flex:1,background:isVeg?"rgba(34,197,94,.12)":"rgba(255,255,255,.04)",border:isVeg?"1.5px solid #22c55e":"1.5px solid rgba(255,255,255,.08)",color:isVeg?"#22c55e":"rgba(255,255,255,.4)",borderRadius:10,padding:"8px",fontSize:".82rem",fontWeight:700,cursor:"pointer"}}>🟢 Veg</button>
             <button onClick={()=>setIsVeg(false)} style={{flex:1,background:!isVeg?"rgba(239,68,68,.12)":"rgba(255,255,255,.04)",border:!isVeg?"1.5px solid #ef4444":"1.5px solid rgba(255,255,255,.08)",color:!isVeg?"#ef4444":"rgba(255,255,255,.4)",borderRadius:10,padding:"8px",fontSize:".82rem",fontWeight:700,cursor:"pointer"}}>🔴 Non-Veg</button>
@@ -521,7 +549,9 @@ export default function ProteinTracker(){
   useEffect(()=>{if(loaded)saveStorage(STORAGE_KEYS.CUSTOM_FOODS,customFoods);},[customFoods,loaded]);
 
   const getMealProtein=(mid)=>Object.entries(mealData[mid]||{}).reduce((s,[id,c])=>{const f=allFoods.find(fd=>fd.id===id);return s+(f?f.protein*c:0);},0);
+  const getMealCal=(mid)=>Object.entries(mealData[mid]||{}).reduce((s,[id,c])=>{const f=allFoods.find(fd=>fd.id===id);return s+(f&&f.cal?f.cal*c:0);},0);
   const totalProtein=MEALS.reduce((s,m)=>s+getMealProtein(m.id),0);
+  const totalCal=MEALS.reduce((s,m)=>s+getMealCal(m.id),0);
   const totalItems=Object.values(mealData).reduce((s,m)=>s+Object.values(m).reduce((a,b)=>a+b,0),0);
   const currentMealItems=mealData[activeMeal]||{};
 
@@ -659,6 +689,11 @@ export default function ProteinTracker(){
         <p style={{textAlign:"center",marginTop:6,fontSize:".82rem",color:totalProtein>=targetProtein?"#22c55e":"rgba(255,255,255,.4)",fontWeight:600}}>
           {totalItems>0?getMsg(totalProtein,targetProtein):"Tap foods below to start"}
         </p>
+        {totalCal>0&&(
+          <p style={{textAlign:"center",marginTop:4,fontSize:".7rem",color:"rgba(255,255,255,.25)"}}>
+            🔥 {totalCal} cal total · {totalProtein>0?Math.round(totalCal/totalProtein):0} cal per gram of protein
+          </p>
+        )}
       </div>
 
       {/* Meals */}
@@ -767,11 +802,11 @@ export default function ProteinTracker(){
           <div style={{background:"rgba(234,179,8,.06)",border:"1px solid rgba(234,179,8,.15)",borderRadius:16,padding:"18px",marginBottom:16}}>
             <h4 style={{fontSize:".95rem",fontWeight:700,color:"#eab308",marginBottom:4}}>🔔 Get Weekly Protein Plans</h4>
             <p style={{fontSize:".72rem",color:"rgba(255,255,255,.35)",marginBottom:14,lineHeight:1.5}}>
-              Coming Soon. Free 7-day high-protein Indian meal plan delivered to your inbox every Monday. No spam, unsubscribe anytime.
+              Free 7-day high-protein Indian meal plan delivered to your inbox every Monday. No spam, unsubscribe anytime.
             </p>
             {emailSubmitted?(
               <div style={{background:"rgba(34,197,94,.1)",border:"1px solid rgba(34,197,94,.2)",borderRadius:12,padding:"12px",textAlign:"center"}}>
-                <span style={{fontSize:".88rem",color:"#22c55e",fontWeight:700}}>✅ You're in! Check your inbox Monday. Coming Soon.</span>
+                <span style={{fontSize:".88rem",color:"#22c55e",fontWeight:700}}>✅ You're in! Check your inbox Monday.</span>
               </div>
             ):(
               <div style={{display:"flex",gap:8}}>
@@ -819,7 +854,7 @@ export default function ProteinTracker(){
             <p style={{fontSize:".78rem",color:"rgba(255,255,255,.35)",lineHeight:1.5}}>
               Got feedback? Want a feature? Found a bug?
             </p>
-            <a href="https://t.me/protein_ka_chakkar" target="_blank" rel="noopener noreferrer" style={{fontSize:".82rem",color:"#0088cc",fontWeight:700,textDecoration:"none",display:"inline-block",marginTop:8}}>
+            <a href="https://t.me/protein_hi_protein" target="_blank" rel="noopener noreferrer" style={{fontSize:".82rem",color:"#0088cc",fontWeight:700,textDecoration:"none",display:"inline-block",marginTop:8}}>
               ✈️ Tell us on Telegram
             </a>
           </div>
