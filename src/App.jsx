@@ -458,7 +458,7 @@ function ShareCard({current,target,mealData,allFoods}){
           </div>);
         })}
       </div>
-      <div style={{textAlign:"center",fontSize:".58rem",color:"rgba(255,255,255,.18)"}}>Protein Tracker · protein-tracker.vercel.app</div>
+      <div style={{textAlign:"center",fontSize:".58rem",color:"rgba(255,255,255,.18)"}}>Protein Tracker · protein-tracker-one.vercel.app</div>
     </div>
   );
 }
@@ -575,7 +575,7 @@ export default function ProteinTracker(){
 
   const handleShare=async()=>{
     const mealLines=MEALS.map(m=>{const mp=getMealProtein(m.id);const items=Object.entries(mealData[m.id]).filter(([_,c])=>c>0).map(([id,c])=>{const f=allFoods.find(fd=>fd.id===id);return f?`  ${f.emoji} ${f.name} ×${c} = ${f.protein*c}g`:'';}).filter(Boolean).join("\n");return mp>0?`${m.emoji} ${m.label}: ${mp}g\n${items}`:null;}).filter(Boolean).join("\n\n");
-    const text=`🏆 Protein Tracker\n\nToday: ${totalProtein}g / ${targetProtein}g (${Math.round((totalProtein/targetProtein)*100)}%)\n\n${mealLines}\n\nTrack yours → protein-tracker.vercel.app`;
+    const text=`🏆 Protein Tracker\n\nToday: ${totalProtein}g / ${targetProtein}g (${Math.round((totalProtein/targetProtein)*100)}%)\n\n${mealLines}\n\nTrack yours → protein-tracker-one.vercel.app`;
     if(navigator.share){try{await navigator.share({title:"Protein Tracker",text});}catch{}}
     else{try{await navigator.clipboard.writeText(text);alert("Copied! Share on WhatsApp 💬");}catch{}}
   };
