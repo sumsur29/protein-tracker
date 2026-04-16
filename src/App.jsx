@@ -6,6 +6,10 @@ const STORAGE_KEYS = {
   HISTORY: "pkh-history",
   CUSTOM_FOODS: "pkh-custom-foods",
   TODAY: "pkh-today",
+  // Bunny retention
+  BUNNY: "pkh-bunny",
+  BUNNY_GRAVEYARD: "pkh-bunny-graveyard",
+  BUNNY_DISABLED: "pkh-bunny-disabled",
 };
 
 async function loadStorage(key, fallback) {
@@ -21,6 +25,81 @@ async function saveStorage(key, value) {
 function getTodayKey() {
   return new Date().toISOString().slice(0, 10);
 }
+
+// ============ BUNNY — RETENTION PET ============
+// HP 0-100. 24h grace after last feed; beyond that, -7 HP per 12h elapsed.
+// Dies from full HP in ~9 days of total neglect.
+// Logging any food = +10 HP (rate-limited to 1/hour so + spam doesn't game it).
+// Hitting daily protein target = +5 HP (once per day).
+
+const BUNNY_NAMES = [
+  'Mithu','Golu','Chintu','Laddoo','Pinky','Fluffy','Roshni','Bubbles',
+  'Moti','Gulabo','Cookie','Peanut','Simba','Oreo','Hazel','Noodle',
+  'Mochi','Dumpling','Biscuit','Toto',
+];
+const BUNNY_GRACE_HOURS = 24;
+const BUNNY_DECAY_PER_12H = 7;
+const BUNNY_FEED_HP = 10;
+const BUNNY_TARGET_HIT_BONUS = 5;
+
+function makeNewBunny(name) {
+  const now = new Date().toISOString();
+  return {
+    name: name || BUNNY_NAMES[Math.floor(Math.random() * BUNNY_NAMES.length)],
+    born: now,
+    hp: 100,
+    lastFedAt: now,
+    lastCheckedAt: now,
+    targetHitDate: null,
+  };
+}
+
+function tickBunny(bunny, nowISO) {
+  if (!bunny) return null;
+  const now = nowISO ? new Date(nowISO) : new Date();
+  const lastFed = new Date(bunny.lastFedAt);
+  const hoursSinceFeed = (now - lastFed) / (1000 * 60 * 60);
+  if (hoursSinceFeed <= BUNNY_GRACE_HOURS) {
+    return { ...bunny, lastCheckedAt: now.toISOString() };
+  }
+  const hoursOverGrace = hoursSinceFeed - BUNNY_GRACE_HOURS;
+  const decayBlocks = Math.floor(hoursOverGrace / 12);
+  const newHp = Math.max(0, bunny.hp - decayBlocks * BUNNY_DECAY_PER_12H);
+  return { ...bunny, hp: newHp, lastCheckedAt: now.toISOString() };
+}
+
+function feedBunny(bunny, amount) {
+  if (!bunny || bunny.hp <= 0) return bunny;
+  const now = new Date().toISOString();
+  const newHp = Math.min(100, bunny.hp + (amount || BUNNY_FEED_HP));
+  return { ...bunny, hp: newHp, lastFedAt: now, lastCheckedAt: now };
+}
+
+function bonusBunny(bunny, dateKey) {
+  if (!bunny || bunny.hp <= 0) return bunny;
+  if (bunny.targetHitDate === dateKey) return bunny;
+  const newHp = Math.min(100, bunny.hp + BUNNY_TARGET_HIT_BONUS);
+  return { ...bunny, hp: newHp, targetHitDate: dateKey };
+}
+
+function bunnyIsDead(bunny) { return bunny && bunny.hp <= 0; }
+
+function bunnyDaysAlive(bunny) {
+  if (!bunny) return 0;
+  const born = new Date(bunny.born);
+  const now = new Date();
+  return Math.floor((now - born) / (1000 * 60 * 60 * 24));
+}
+
+// Bunny always shows as 🐰; mood emoji + opacity/filter convey status.
+function bunnyVisualState(hp) {
+  if (hp <= 0)  return { mood: '',   label: 'Dead',     color: '#6b7280', ring: 'rgba(107,114,128,.3)', opacity: 0.35, filter: 'grayscale(1)',  dead: true };
+  if (hp <= 25) return { mood: '🆘', label: 'Critical', color: '#ef4444', ring: 'rgba(239,68,68,.5)',   opacity: 0.75, filter: 'saturate(.7)' };
+  if (hp <= 50) return { mood: '💤', label: 'Weak',     color: '#f59e0b', ring: 'rgba(245,158,11,.45)', opacity: 0.9,  filter: 'saturate(.85)' };
+  if (hp <= 80) return { mood: '',   label: 'Okay',     color: '#eab308', ring: 'rgba(234,179,8,.4)',   opacity: 1,    filter: 'none' };
+  return              { mood: '✨', label: 'Thriving', color: '#22c55e', ring: 'rgba(34,197,94,.5)',   opacity: 1,    filter: 'none' };
+}
+
 
 // ============ FOOD DATABASE ============
 // All protein values for COOKED/PREPARED servings (Indian style)
@@ -485,6 +564,252 @@ function TipsSection(){
   );
 }
 
+// ============ BUNNY — UI COMPONENTS ============
+
+// Small badge shown on homepage header
+function BunnyBadge({ bunny, onTap }) {
+  if (!bunny) return null;
+  const v = bunnyVisualState(bunny.hp);
+  const critical = bunny.hp <= 25 && bunny.hp > 0;
+  return (
+    <button onClick={onTap} style={{
+      background: critical ? 'rgba(239,68,68,.12)' : 'rgba(255,255,255,.04)',
+      border: `1.5px solid ${v.ring}`,
+      borderRadius: 20,
+      padding: '4px 10px 4px 6px',
+      display: 'flex', alignItems: 'center', gap: 6,
+      cursor: 'pointer',
+      animation: critical ? 'pulse 1.4s infinite' : 'none',
+    }}>
+      <div style={{position:'relative',width:22,height:22,display:'flex',alignItems:'center',justifyContent:'center'}}>
+        <span style={{fontSize:'1.1rem',opacity:v.opacity,filter:v.filter,lineHeight:1}}>
+          {v.dead ? '👻' : '🐰'}
+        </span>
+        {v.mood && (
+          <span style={{position:'absolute',top:-4,right:-6,fontSize:'.7rem',lineHeight:1}}>{v.mood}</span>
+        )}
+      </div>
+      <div style={{textAlign:'left',lineHeight:1.1}}>
+        <div style={{fontSize:'.66rem',fontWeight:700,color:v.color,fontFamily:"'Nunito',sans-serif"}}>{bunny.name}</div>
+        <div style={{fontSize:'.55rem',color:'rgba(255,255,255,.4)'}}>HP {bunny.hp}/100</div>
+      </div>
+    </button>
+  );
+}
+
+// Bunny detail panel (opens from badge tap)
+function BunnyPanel({ bunny, graveyard, onClose, onShare, onDisable }) {
+  const v = bunnyVisualState(bunny.hp);
+  const daysAlive = bunnyDaysAlive(bunny);
+  const hoursSinceFed = Math.floor((new Date() - new Date(bunny.lastFedAt)) / (1000*60*60));
+  return (
+    <div onClick={onClose} style={{
+      position:'fixed',inset:0,background:'rgba(0,0,0,.85)',zIndex:310,
+      display:'flex',alignItems:'center',justifyContent:'center',padding:16,backdropFilter:'blur(8px)',
+    }}>
+      <div onClick={e=>e.stopPropagation()} style={{
+        background:'#141414',border:`2px solid ${v.ring}`,borderRadius:20,
+        padding:22,width:'100%',maxWidth:380,maxHeight:'90vh',overflowY:'auto',
+      }}>
+        <div style={{textAlign:'center',marginBottom:18}}>
+          <div style={{position:'relative',display:'inline-block',marginBottom:6}}>
+            <div style={{
+              fontSize:'4rem',
+              opacity:v.opacity,
+              filter:v.filter,
+              lineHeight:1,
+              transition:'opacity .4s, filter .4s',
+            }}>{v.dead ? '👻' : '🐰'}</div>
+            {v.mood && (
+              <span style={{
+                position:'absolute',top:-4,right:-16,fontSize:'1.8rem',lineHeight:1,
+                animation: bunny.hp <= 25 && bunny.hp > 0 ? 'pulse 1.4s infinite' : 'none',
+              }}>{v.mood}</span>
+            )}
+          </div>
+          <h3 style={{color:v.color,fontSize:'1.8rem',fontFamily:"'Teko',sans-serif",fontWeight:700,margin:0,lineHeight:1}}>
+            {bunny.name}
+          </h3>
+          <div style={{fontSize:'.7rem',color:'rgba(255,255,255,.45)',marginTop:2}}>
+            {v.label} · {daysAlive} day{daysAlive!==1?'s':''} old
+          </div>
+        </div>
+
+        <div style={{marginBottom:16}}>
+          <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
+            <span style={{fontSize:'.68rem',color:'rgba(255,255,255,.5)',textTransform:'uppercase',letterSpacing:.5}}>Health</span>
+            <span style={{fontSize:'.75rem',color:v.color,fontWeight:700,fontFamily:"'Teko',sans-serif"}}>{bunny.hp}/100</span>
+          </div>
+          <div style={{height:8,background:'rgba(255,255,255,.06)',borderRadius:4,overflow:'hidden'}}>
+            <div style={{width:`${bunny.hp}%`,height:'100%',background:v.color,transition:'width .4s ease'}}/>
+          </div>
+        </div>
+
+        <div style={{
+          background:'rgba(255,255,255,.03)',border:'1px solid rgba(255,255,255,.06)',
+          borderRadius:12,padding:'10px 12px',marginBottom:12,
+          fontSize:'.72rem',color:'rgba(255,255,255,.6)',lineHeight:1.5,
+        }}>
+          {bunny.hp <= 25 ? (
+            <><b style={{color:'#ef4444'}}>⚠️ Critical.</b> Log a meal now or {bunny.name} won't make it.</>
+          ) : bunny.hp <= 50 ? (
+            <><b style={{color:'#f59e0b'}}>{bunny.name} is losing strength.</b> Log a meal to bring HP back up.</>
+          ) : hoursSinceFed > 18 ? (
+            <>Last fed {hoursSinceFed}h ago. Log something soon to keep {bunny.name} healthy.</>
+          ) : (
+            <>{bunny.name} is doing great. Keep logging daily.</>
+          )}
+        </div>
+
+        <div style={{fontSize:'.65rem',color:'rgba(255,255,255,.35)',lineHeight:1.6,marginBottom:14,padding:'0 2px'}}>
+          <div>• Log any meal: <b style={{color:'#22c55e'}}>+{BUNNY_FEED_HP} HP</b></div>
+          <div>• Hit daily protein target: <b style={{color:'#22c55e'}}>+{BUNNY_TARGET_HIT_BONUS} HP</b> bonus</div>
+          <div>• No log for {BUNNY_GRACE_HOURS}h: HP decays</div>
+        </div>
+
+        {graveyard && graveyard.length > 0 && (
+          <div style={{
+            background:'rgba(107,114,128,.06)',border:'1px solid rgba(107,114,128,.15)',
+            borderRadius:12,padding:'10px 12px',marginBottom:14,
+          }}>
+            <div style={{fontSize:'.66rem',color:'rgba(255,255,255,.45)',textTransform:'uppercase',letterSpacing:.5,marginBottom:6}}>
+              🪦 Graveyard ({graveyard.length})
+            </div>
+            {graveyard.slice(-3).reverse().map((g,i)=>(
+              <div key={i} style={{fontSize:'.7rem',color:'rgba(255,255,255,.5)',padding:'2px 0'}}>
+                {g.name} · {g.daysAlive} day{g.daysAlive!==1?'s':''}
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div style={{display:'flex',gap:8,marginBottom:8}}>
+          <button onClick={onShare} style={{
+            flex:1,background:'#25D366',color:'#fff',border:'none',borderRadius:10,
+            padding:'10px',fontSize:'.82rem',fontWeight:700,cursor:'pointer',
+          }}>Share 💬</button>
+          <button onClick={onClose} style={{
+            flex:1,background:'rgba(255,255,255,.05)',border:'1px solid rgba(255,255,255,.1)',
+            color:'#fff',borderRadius:10,padding:'10px',fontSize:'.82rem',cursor:'pointer',
+          }}>Close</button>
+        </div>
+
+        {onDisable && (
+          <button onClick={onDisable} style={{
+            width:'100%',background:'transparent',border:'none',
+            color:'rgba(255,255,255,.3)',fontSize:'.65rem',cursor:'pointer',padding:6,textDecoration:'underline',
+          }}>Disable bunny feature</button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Death modal — shown on load if bunny died while user was away
+function BunnyDeathModal({ deadBunny, graveyardCount, onAdoptNew, onDisable }) {
+  const [newName, setNewName] = useState(BUNNY_NAMES[Math.floor(Math.random()*BUNNY_NAMES.length)]);
+  const daysAlive = deadBunny ? deadBunny.daysAlive : 0;
+  return (
+    <div style={{
+      position:'fixed',inset:0,background:'rgba(0,0,0,.92)',zIndex:400,
+      display:'flex',alignItems:'center',justifyContent:'center',padding:20,backdropFilter:'blur(10px)',
+    }}>
+      <div style={{
+        background:'#141414',border:'2px solid rgba(239,68,68,.3)',borderRadius:20,
+        padding:26,width:'100%',maxWidth:380,textAlign:'center',
+      }}>
+        <div style={{position:'relative',display:'inline-block',marginBottom:8}}>
+          <span style={{fontSize:'4rem',opacity:.4,filter:'grayscale(1)',lineHeight:1}}>🐰</span>
+          <span style={{position:'absolute',top:-6,right:-14,fontSize:'2rem'}}>👻</span>
+        </div>
+        <h3 style={{color:'#ef4444',fontSize:'1.8rem',fontFamily:"'Teko',sans-serif",fontWeight:700,margin:0,lineHeight:1}}>
+          {deadBunny ? deadBunny.name : 'Your bunny'} died
+        </h3>
+        <p style={{fontSize:'.82rem',color:'rgba(255,255,255,.5)',marginTop:8,lineHeight:1.5,marginBottom:18}}>
+          Lived {daysAlive} day{daysAlive!==1?'s':''}. Starved while you were away.<br/>
+          {graveyardCount > 1 && <span style={{color:'rgba(239,68,68,.7)',fontSize:'.72rem'}}>💀 This is your {graveyardCount}{graveyardCount===2?'nd':graveyardCount===3?'rd':'th'} bunny lost.</span>}
+        </p>
+
+        <div style={{background:'rgba(255,255,255,.03)',border:'1px solid rgba(255,255,255,.06)',borderRadius:14,padding:16,marginBottom:14}}>
+          <div style={{fontSize:'.68rem',color:'rgba(255,255,255,.5)',textTransform:'uppercase',letterSpacing:.5,marginBottom:8}}>
+            Adopt a new bunny
+          </div>
+          <input
+            type="text" value={newName} onChange={e=>setNewName(e.target.value)} maxLength={18}
+            style={{width:'100%',background:'rgba(255,255,255,.05)',border:'1px solid rgba(255,255,255,.1)',borderRadius:10,padding:'10px 12px',color:'#fff',fontSize:'.95rem',outline:'none',marginBottom:8,boxSizing:'border-box',textAlign:'center',fontFamily:"'Teko',sans-serif",fontWeight:700,letterSpacing:.3}}
+          />
+          <button onClick={()=>setNewName(BUNNY_NAMES[Math.floor(Math.random()*BUNNY_NAMES.length)])} style={{
+            background:'transparent',border:'none',color:'#eab308',fontSize:'.7rem',cursor:'pointer',textDecoration:'underline',padding:0,
+          }}>🎲 random name</button>
+        </div>
+
+        <button onClick={()=>onAdoptNew(newName.trim() || BUNNY_NAMES[0])} style={{
+          width:'100%',background:'#eab308',color:'#000',border:'none',borderRadius:12,
+          padding:'12px',fontSize:'.9rem',fontWeight:800,cursor:'pointer',marginBottom:8,
+        }}>Adopt {newName.trim() || '?'} →</button>
+
+        {onDisable && (
+          <button onClick={onDisable} style={{
+            width:'100%',background:'transparent',border:'none',
+            color:'rgba(255,255,255,.3)',fontSize:'.68rem',cursor:'pointer',padding:8,textDecoration:'underline',
+          }}>Skip — disable bunny feature</button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Onboarding — first-time bunny adoption
+function BunnyOnboarding({ onAdopt, onSkip }) {
+  const [name, setName] = useState(BUNNY_NAMES[Math.floor(Math.random()*BUNNY_NAMES.length)]);
+  return (
+    <div style={{
+      position:'fixed',inset:0,background:'rgba(0,0,0,.92)',zIndex:400,
+      display:'flex',alignItems:'center',justifyContent:'center',padding:20,backdropFilter:'blur(10px)',
+    }}>
+      <div style={{
+        background:'#141414',border:'2px solid rgba(234,179,8,.3)',borderRadius:20,
+        padding:26,width:'100%',maxWidth:380,textAlign:'center',
+      }}>
+        <div style={{fontSize:'4rem',marginBottom:8}}>🐰</div>
+        <h3 style={{color:'#eab308',fontSize:'1.7rem',fontFamily:"'Teko',sans-serif",fontWeight:700,margin:0,lineHeight:1}}>
+          Meet your bunny
+        </h3>
+        <p style={{fontSize:'.82rem',color:'rgba(255,255,255,.5)',marginTop:8,lineHeight:1.5,marginBottom:18}}>
+          Log food daily to keep them happy.<br/>
+          Skip for too long and they'll starve. No pressure. 🙃
+        </p>
+
+        <div style={{background:'rgba(255,255,255,.03)',border:'1px solid rgba(255,255,255,.06)',borderRadius:14,padding:16,marginBottom:14}}>
+          <div style={{fontSize:'.68rem',color:'rgba(255,255,255,.5)',textTransform:'uppercase',letterSpacing:.5,marginBottom:8}}>
+            Name them
+          </div>
+          <input
+            type="text" value={name} onChange={e=>setName(e.target.value)} maxLength={18}
+            style={{width:'100%',background:'rgba(255,255,255,.05)',border:'1px solid rgba(255,255,255,.1)',borderRadius:10,padding:'10px 12px',color:'#fff',fontSize:'.95rem',outline:'none',marginBottom:8,boxSizing:'border-box',textAlign:'center',fontFamily:"'Teko',sans-serif",fontWeight:700,letterSpacing:.3}}
+            autoFocus
+          />
+          <button onClick={()=>setName(BUNNY_NAMES[Math.floor(Math.random()*BUNNY_NAMES.length)])} style={{
+            background:'transparent',border:'none',color:'#eab308',fontSize:'.7rem',cursor:'pointer',textDecoration:'underline',padding:0,
+          }}>🎲 random name</button>
+        </div>
+
+        <button onClick={()=>onAdopt(name.trim() || BUNNY_NAMES[0])} style={{
+          width:'100%',background:'#eab308',color:'#000',border:'none',borderRadius:12,
+          padding:'12px',fontSize:'.9rem',fontWeight:800,cursor:'pointer',marginBottom:8,
+        }}>Let's go →</button>
+
+        {onSkip && (
+          <button onClick={onSkip} style={{
+            width:'100%',background:'transparent',border:'none',
+            color:'rgba(255,255,255,.3)',fontSize:'.7rem',cursor:'pointer',padding:8,textDecoration:'underline',
+          }}>No thanks</button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ============ MAIN APP ============
 export default function ProteinTracker(){
   const[mealData,setMealData]=useState({breakfast:{},lunch:{},snacks:{},dinner:{}});
@@ -508,6 +833,13 @@ export default function ProteinTracker(){
   const[toast,setToast]=useState("");
   const[communityEmail,setCommunityEmail]=useState("");
   const[emailSubmitted,setEmailSubmitted]=useState(false);
+  // Bunny state
+  const[bunny,setBunny]=useState(null);
+  const[bunnyGraveyard,setBunnyGraveyard]=useState([]);
+  const[bunnyDisabled,setBunnyDisabled]=useState(false);
+  const[showBunnyPanel,setShowBunnyPanel]=useState(false);
+  const[showBunnyOnboarding,setShowBunnyOnboarding]=useState(false);
+  const[recentlyDeadBunny,setRecentlyDeadBunny]=useState(null);
   const saveTimer=useRef(null);
 
   const allFoods=[...FOOD_DATA,...customFoods];
@@ -525,6 +857,31 @@ export default function ProteinTracker(){
       if(today&&today.date===getTodayKey()){setMealData(today.meals);}
       const es=await loadStorage("pkh-email-submitted",false);
       if(es)setEmailSubmitted(true);
+      // Bunny: load + tick for elapsed time
+      const bn=await loadStorage(STORAGE_KEYS.BUNNY,null);
+      const gy=await loadStorage(STORAGE_KEYS.BUNNY_GRAVEYARD,[]);
+      const bdis=await loadStorage(STORAGE_KEYS.BUNNY_DISABLED,false);
+      if(gy)setBunnyGraveyard(gy);
+      if(bdis)setBunnyDisabled(true);
+      if(bn && !bdis){
+        const ticked=tickBunny(bn);
+        if(bunnyIsDead(ticked)){
+          const daysAlive=bunnyDaysAlive(ticked);
+          const grave={name:ticked.name,born:ticked.born,died:new Date().toISOString(),daysAlive,causeOfDeath:'starvation'};
+          const newGraveyard=[...(gy||[]),grave];
+          setBunnyGraveyard(newGraveyard);
+          saveStorage(STORAGE_KEYS.BUNNY_GRAVEYARD,newGraveyard);
+          setBunny(null);
+          saveStorage(STORAGE_KEYS.BUNNY,null);
+          setRecentlyDeadBunny(grave);
+        }else{
+          setBunny(ticked);
+          saveStorage(STORAGE_KEYS.BUNNY,ticked);
+        }
+      }else if(!bn && !bdis && p){
+        // Only show bunny onboarding AFTER v1 onboarding is done (profile exists)
+        setTimeout(()=>setShowBunnyOnboarding(true),1500);
+      }
       setLoaded(true);
     })();
   },[]);
@@ -562,10 +919,65 @@ export default function ProteinTracker(){
     return catMatch&&searchMatch;
   });
 
-  const addItem=(id)=>setMealData(p=>({...p,[activeMeal]:{...p[activeMeal],[id]:(p[activeMeal][id]||0)+1}}));
+  const addItem=(id)=>{setMealData(p=>({...p,[activeMeal]:{...p[activeMeal],[id]:(p[activeMeal][id]||0)+1}}));feedBunnyFromAction();};
   const removeItem=(id)=>setMealData(p=>{const n=(p[activeMeal][id]||0)-1;const m={...p[activeMeal]};if(n<=0)delete m[id];else m[id]=n;return{...p,[activeMeal]:m};});
   const resetAll=()=>{setMealData({breakfast:{},lunch:{},snacks:{},dinner:{}});setShowShare(false);};
   const addCustomFood=(f)=>{setCustomFoods(p=>[...p,f]);addItem(f.id);};
+
+  // ===== BUNNY HANDLERS =====
+  const adoptBunny=(name)=>{
+    const b=makeNewBunny(name);
+    setBunny(b);
+    saveStorage(STORAGE_KEYS.BUNNY,b);
+    setShowBunnyOnboarding(false);
+    setRecentlyDeadBunny(null);
+    setToast(`${b.name} adopted! Keep them fed 🐰`);
+    setTimeout(()=>setToast(""),2500);
+  };
+  const feedBunnyFromAction=()=>{
+    if(!bunny||bunnyDisabled||bunny.hp<=0)return;
+    // Rate limit: only feed if last feed was >1h ago
+    const hoursSinceFeed=(Date.now()-new Date(bunny.lastFedAt).getTime())/(1000*60*60);
+    if(hoursSinceFeed<1)return;
+    const fed=feedBunny(bunny);
+    setBunny(fed);
+    saveStorage(STORAGE_KEYS.BUNNY,fed);
+  };
+  const grantTargetBonus=(dateKey)=>{
+    if(!bunny||bunnyDisabled||bunny.hp<=0)return;
+    const bonused=bonusBunny(bunny,dateKey);
+    if(bonused.hp!==bunny.hp||bonused.targetHitDate!==bunny.targetHitDate){
+      setBunny(bonused);
+      saveStorage(STORAGE_KEYS.BUNNY,bonused);
+    }
+  };
+  const disableBunny=()=>{
+    setBunnyDisabled(true);
+    saveStorage(STORAGE_KEYS.BUNNY_DISABLED,true);
+    setShowBunnyPanel(false);
+    setShowBunnyOnboarding(false);
+    setRecentlyDeadBunny(null);
+  };
+  const shareBunny=async()=>{
+    if(!bunny)return;
+    const days=bunnyDaysAlive(bunny);
+    const v=bunnyVisualState(bunny.hp);
+    const gyCount=bunnyGraveyard.length;
+    const line1=`🐰 My bunny ${bunny.name} is ${days} day${days!==1?'s':''} old — ${v.label.toLowerCase()} at ${bunny.hp}/100 HP.`;
+    const line2=gyCount>0?`(${gyCount} previous bunn${gyCount===1?'y':'ies'} didn't make it 🪦)`:'';
+    const text=`${line1}\n${line2}\n\nKeep yours alive → protein-tracker-one.vercel.app`;
+    if(navigator.share){try{await navigator.share({title:'My Protein Bunny',text});}catch{}}
+    else{try{await navigator.clipboard.writeText(text);setToast('Copied! Share on WhatsApp 💬');setTimeout(()=>setToast(''),2500);}catch{}}
+  };
+
+  // Bunny target-hit bonus: when user crosses protein target for the day, grant once per day
+  useEffect(()=>{
+    if(!bunny||bunnyDisabled||bunny.hp<=0)return;
+    if(totalProtein>=targetProtein){
+      grantTargetBonus(getTodayKey());
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[totalProtein,targetProtein,bunny,bunnyDisabled]);
 
   const saveProfile=(name,tgt)=>{
     const p={name:name||profileName,target:tgt||targetProtein,vegOnly};
@@ -650,7 +1062,7 @@ export default function ProteinTracker(){
   // ===== MAIN TRACKER =====
   return(
     <div style={{minHeight:"100vh",background:"linear-gradient(180deg,#0a0a0a,#111)",fontFamily:"'Nunito',sans-serif",color:"#fff",maxWidth:480,margin:"0 auto",paddingBottom:110}}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{display:none}input::placeholder{color:rgba(255,255,255,.22)}@keyframes fadeIn{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{display:none}input::placeholder{color:rgba(255,255,255,.22)}@keyframes fadeIn{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}`}</style>
 
       {/* Header */}
       <div style={{padding:"14px 20px 0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -662,7 +1074,8 @@ export default function ProteinTracker(){
             {new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"short"})}
           </div>
         </div>
-        <div style={{display:"flex",gap:6}}>
+        <div style={{display:"flex",alignItems:"center",gap:6}}>
+          {bunny && !bunnyDisabled && <BunnyBadge bunny={bunny} onTap={()=>setShowBunnyPanel(true)}/>}
           <button onClick={()=>setShowHistory(true)} style={{background:"rgba(255,255,255,.05)",border:"1px solid rgba(255,255,255,.08)",color:"rgba(255,255,255,.35)",borderRadius:10,padding:"5px 10px",fontSize:".7rem",cursor:"pointer"}}>📊</button>
           <button onClick={()=>setShowCalc(true)} style={{background:"rgba(255,255,255,.05)",border:"1px solid rgba(255,255,255,.08)",color:"rgba(255,255,255,.35)",borderRadius:10,padding:"5px 10px",fontSize:".7rem",cursor:"pointer"}}>🧮</button>
           <button onClick={resetAll} style={{background:"rgba(255,255,255,.05)",border:"1px solid rgba(255,255,255,.08)",color:"rgba(255,255,255,.35)",borderRadius:10,padding:"5px 10px",fontSize:".7rem",cursor:"pointer"}}>Reset</button>
@@ -885,6 +1298,10 @@ export default function ProteinTracker(){
       {showAddCustom&&<AddCustomModal onAdd={addCustomFood} onClose={()=>setShowAddCustom(false)}/>}
       {showCalc&&<ProteinCalcModal onClose={()=>setShowCalc(false)} onSetTarget={t=>{setTargetProtein(t);saveProfile(profileName,t);setToast("Target set to "+t+"g/day ✅");setTimeout(()=>setToast(""),3000);}}/>}
       {showHistory&&<HistoryView history={history} target={targetProtein} allFoods={allFoods} onClose={()=>setShowHistory(false)}/>}
+      {/* Bunny modals */}
+      {showBunnyPanel&&bunny&&<BunnyPanel bunny={bunny} graveyard={bunnyGraveyard} onClose={()=>setShowBunnyPanel(false)} onShare={shareBunny} onDisable={disableBunny}/>}
+      {recentlyDeadBunny&&<BunnyDeathModal deadBunny={recentlyDeadBunny} graveyardCount={bunnyGraveyard.length} onAdoptNew={adoptBunny} onDisable={disableBunny}/>}
+      {showBunnyOnboarding&&!bunny&&!bunnyDisabled&&<BunnyOnboarding onAdopt={adoptBunny} onSkip={disableBunny}/>}
     </div>
   );
 }
